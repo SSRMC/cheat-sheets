@@ -1,0 +1,119 @@
+---
+title: "Pretty Plots"
+author: | 
+  | Philip Waggoner
+  | College of William & Mary
+  | [Social Science Research Methods Center](https://ssrmc.wm.edu/)
+  | pdwaggoner@wm.edu
+#date: "9/6/2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Preface
+
+Plotting results is arguably the most important part of presenting research. Major social science journals, such as the _American Journal of Political Science_, have issued recent statements strongly [recommending](https://ajps.org/guidelines-for-manuscripts/manuscript-preparation/) authors offer visual output in lieu of redundant numerical output whenever possible. Further, the importance of findings and novelty of design can be lost (or at best _limited_) if the researcher fails to offer simple, clear visualization of findings. Given this importance in the "Age of Data Science", we are offering this cheat sheet to demonstrate the relative ease of moving from ugly (or boring) plots using base `R` functions to pretty (or exciting) plots using `ggplot2`.
+
+### The Data and Preliminaries
+
+In this cheat sheet demonstrating the creation of pretty plots in `R`, we focus on two of the most commonly used plots in social science research: histograms and scatterplots. For all applications, we use the `diamonds` dataset housed within the `ggplot2` package. The data include 53,940 observations across 10 variables: `carat`, `cut`, `color`, `clarity`,`depth`, `table`, `price`, `x`, `y`, and `z`. Run the line `?diamonds` to read more on each variable.
+
+To begin, start by loading the `ggplot2` library (be sure to first install `ggplot2` using the command `install.packages` if not already done; _users only need to install a package once_) and then store the `diamonds` dataset in object `d` to make it easier to access. To get a feel for the data, users should generate some simple summary statistics for each variable in the data set using the `summary` command followed by the name of the dataset, `d`, in parentheses. 
+
+```{R, echo=TRUE}
+library(ggplot2) # load the ggplot2 library to access the data
+d <- diamonds
+```
+
+### Histograms
+
+Let's say we were interested in observing the density of price of diamonds by cut. This is the perfect opportunity to generate and use a histogram. Using base `R`, we begin first by generating an "ugly" histogram of a diamond's price, with individual plots corresponding with each of the five levels of `cut`, from fair to ideal. See the clunky code below, resulting in a series of less-than-attractive histograms.
+
+```{R, echo=TRUE}
+# First, subset the data by `cut` for individual histograms
+fair <- subset(d, cut == "Fair")
+good <- subset(d, cut == "Good")
+very.good <- subset(d, cut == "Very Good")
+premium <- subset(d, cut == "Premium")
+ideal <- subset(d, cut == "Ideal")
+
+# Next, generate the histograms using the `hist` command
+par(mfrow = c(3, 2)) # places all histograms in a single 3x2 Plot Pane
+hist(fair$price)
+hist(good$price)
+hist(very.good$price)
+hist(premium$price)
+hist(ideal$price)
+```
+
+This is "ugly" for many reasons, from lacking a title and axis lables and colors, to the layout and inefficiency of the code, and so on. We can make this pretty with the cleaner code leveraging `ggplot2`:
+
+```{R, echo=TRUE}
+ggplot(d, aes(price, fill = cut))+ # objects of interest
+  geom_histogram(binwidth = 100) + # thickness of the bins (update as desired)
+  theme_bw() + # color scheme
+  facet_grid(cut ~ ., margins = TRUE, scales = "free") + # compiles histograms into single plot by cut 
+  labs(x="Price", # axis/plot labels
+       y="Density",
+       title = "The Price of Diamonds by Cut")
+```
+
+### Scatterplot
+
+Another very common plot choice in applied statistics and data analysis is the scatterplot. This can be useful for a variety of tasks, from viewing simple distributions of variables to displaying relationships and predicted probabilities. As with histograms, there are less-than-pretty ways of creating these, and thus there are decidedly prettier ways of generating scatterplots. Using the diamonds data still, let's begin with the ugly version using the `plot` command in Base `R` (note: `plot` defaults to a scatterplot. Users can change this with the arugment `type` specified within the command). 
+
+```{R, echo=TRUE}
+plot(d$price, d$carat,
+     main = "The Price of Diamonds by Weight",
+     xlab = "Price",
+     ylab = "Weight (Carat)")
+```
+
+Though this produces a decent scatterplot showing an intuitively positive relationship between `price` and `weight`, there are many additional parameters than can contribute to a prettier and more descriptive plot. As such, let's generate a simple `ggplot2` plot with the command `ggplot` and some additional code below.
+
+```{R, echo=TRUE}
+ggplot(d, aes(x=price, y=carat, color=cut)) + # first the data frame, then in the aesthetic (aes), specific the variables and the color, if desired
+  geom_point() + # tells ggplot to generate a scatterplot (instead of a line plot, e.g.)
+  geom_smooth(method=lm, aes(fill=cut)) # adds a linear smoother with color-specific confidence intervals
+```
+
+This is already a much prettier plot that is also more descriptive. For example, note the different colors associated with the type of cut (e.g., Fair, Good, etc.). Further, note the `geom_smooth` argument, which allows for the inclusion of overlaid linear fit lines between these variables, by cut. Then, in the aesthetic (aes), there are also color-specific confidence intervals around each corresponding line. There are many, many more arguments and updates users can make to `ggplot2` plots, e.g., users can also use the `shape` argument to change the shape of the points (e.g., circles, triangles, etc.). Just run `?ggplot2` to view the many parameters and customization options available.  
+
+However, you may have noticed that when you ran the code, it took some time to generate the plot. This is because of the large size of the data (> 53,000 observations). Additionally, though prettier than the Base `R` version, this plot is a little tricky to read with so many observations. To fix these problems, thereby generating a simpler plot with fewer observations, let's draw a random sample of 1000 observations from the full diamonds data. This will make it easier to see what is going on in the plot.
+
+To do so, simply tell `R` to randomly sample however many rows you want from the data frame, `d`, using the `sample` function. Then, be sure to store the new restricted data set in its own object to avoid overwriting the original full data set, `d`. 
+
+```{R, echo=TRUE}
+small.d <- d[sample(nrow(d), 1000), ] # Note: we call our new restricted data set "small.d"
+```
+
+To verify before moving on that things worked as they should, quickly inspect the data using the `head` command, which shows the first few observations. All variables should be the same and the observations should be random. _Note_: as this is a _random_ sample, try running the above line again to get an entirely new random set of 1000 observations from the larger `diamonds` dataset.
+
+```{R, echo=TRUE}
+head(small.d)
+```
+
+With that, now let's try our scatterplot again with the smaller dataset, `small.d`, to get a less congested picture.
+
+```{R, echo=TRUE}
+ggplot(small.d, aes(x = price, y = carat, color = cut)) +
+  geom_point() + 
+  geom_jitter() + # "jitter" adds a tiny bit of random noise around each point to avoid overfitting
+  geom_smooth(method = lm, aes(fill = cut)) + 
+  theme_bw() +
+  labs(x = "Price", 
+       y = "Weight (Carat)",
+       title = "The Price of Diamonds by Weight",
+       subtitle = "Data from 1000 Randomly Sampled Observations from 'Diamonds'")
+```
+
+### More Resources for the Interested User
+
+1. The [Data Visualization](http://r4ds.had.co.nz/data-visualisation.html) Chapter in the [R for Data Science](http://r4ds.had.co.nz/) Book by Hadley Wickham and Garrett Grolemund
+
+2. The [R Graphics Cookbook](http://www.cookbook-r.com/Graphs/) by Winston Chang
+
+3. The r-statistics.co ggplot2 [tutorial](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html#Animated%20Bubble%20Plot) by Selva Prabhakaran
