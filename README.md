@@ -1,2 +1,2 @@
 # cheat-sheets
-A series of quick .rmd help sheets for tasks in R
+A series of quick .Rmd help sheets for tasks in R
