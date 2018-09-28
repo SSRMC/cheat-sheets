@@ -153,5 +153,5 @@ Most importantly, [Hadley Wickham](http://hadley.nz/) once [told me](https://www
 1. [R Markdown](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
 2. [Thomas Leeper's R Tutorial](https://thomasleeper.com/Rcourse/Intro2R/Intro2R.pdf)
 3. [The Tidyverse](https://www.tidyverse.org/)
-4. [R for Data Science (_Free_ Book on Tidyverse in R by the Tidyverse Creator)](http://r4ds.had.co.nz/)
+4. [R for Data Science (_Free_ Book on Tidyverse in R by Hadley Wickham (Tidyverse mastermind))](http://r4ds.had.co.nz/)
 5. [Basic R Exercises (For Quick Practice)](https://www.r-exercises.com/)
