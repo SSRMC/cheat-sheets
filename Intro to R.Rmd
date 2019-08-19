@@ -3,9 +3,7 @@ title: "Introduction to R"
 author: | 
   | Philip Waggoner
   | College of William & Mary
-  | [Social Science Research Methods Center](https://ssrmc.wm.edu/)
   | pdwaggoner@wm.edu
-#date: "9/6/2018"
 output: html_document
 ---
 
